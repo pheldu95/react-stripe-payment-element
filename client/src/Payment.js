@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import {loadStripe} from "@stripe/stripe-js";
+import CheckoutForm from "./CheckoutForm";
+
 function Payment(props) {
   const[stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
@@ -9,9 +11,20 @@ function Payment(props) {
       setStripePromise(loadStripe(publishableKey));
     })
   }, [])
+
+  useEffect(()=>{
+    fetch("create-payment-intent",{
+      method: "POST",
+      body: JSON.stringify({})
+    }).then(async(r)=>{
+      const{clientSecret} = await r.json();
+      setClientSecret(clientSecret);
+    })
+  },[])
   return (
     <>
       <h1>React Stripe and the Payment Element</h1>
+      <CheckoutForm/>
     </>
   );
 }
