@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {loadStripe} from "@stripe/stripe-js";
 import CheckoutForm from "./CheckoutForm";
+import {Elements} from "@stripe/react-stripe-js";
 
 function Payment(props) {
   const[stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
+  const options = {
+    clientSecret: clientSecret
+  };
   useEffect(() =>{
     fetch("/config").then(async(r)=>{
       const {publishableKey} = await r.json();
@@ -24,7 +28,11 @@ function Payment(props) {
   return (
     <>
       <h1>React Stripe and the Payment Element</h1>
-      <CheckoutForm/>
+      {stripePromise && clientSecret && (
+        <Elements stripe={stripePromise} options={options}>
+          <CheckoutForm />
+        </Elements>
+      )}
     </>
   );
 }
